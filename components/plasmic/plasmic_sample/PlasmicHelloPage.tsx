@@ -21,6 +21,12 @@ import * as p from "@plasmicapp/react-web";
 import * as ph from "@plasmicapp/react-web/lib/host";
 
 import {
+  usePlasmicDataConfig,
+  executePlasmicDataOp,
+  usePlasmicDataOp
+} from "@plasmicapp/react-web/lib/data-sources";
+
+import {
   hasVariant,
   classNames,
   wrapWithClassName,
@@ -38,6 +44,7 @@ import {
 } from "@plasmicapp/react-web";
 import PageLayout from "../../PageLayout"; // plasmic-import: cPfYxPfKbAAF/component
 import { MyComponent } from "../../MyComponent"; // plasmic-import: MZPxOIvRSxMj/codeComponent
+import { Fetcher } from "@plasmicapp/react-web/lib/data-sources"; // plasmic-import: 2aDuB9WVQvRt/codeComponent
 
 import "@plasmicapp/react-web/lib/plasmic.css";
 
@@ -63,6 +70,7 @@ export type PlasmicHelloPage__OverridesType = {
   h1?: p.Flex<"h1">;
   text?: p.Flex<"div">;
   myComponent?: p.Flex<typeof MyComponent>;
+  textFromApi?: p.Flex<"div">;
 };
 
 export interface DefaultHelloPageProps {}
@@ -103,6 +111,56 @@ function PlasmicHelloPage__RenderFunc(props: {
   const $refs = refsRef.current;
 
   const currentUser = p.useCurrentUser?.() || {};
+
+  const [$queries, setDollarQueries] = React.useState<
+    Record<string, ReturnType<typeof usePlasmicDataOp>>
+  >({});
+  const stateSpecs: Parameters<typeof p.useDollarState>[0] = React.useMemo(
+    () => [
+      {
+        path: "variable",
+        type: "private",
+        variableType: "text",
+        initFunc: ({ $props, $state, $queries, $ctx }) => "" as const
+      }
+    ],
+    [$props, $ctx, $refs]
+  );
+  const $state = p.useDollarState(stateSpecs, {
+    $props,
+    $ctx,
+    $queries: $queries,
+    $refs
+  });
+
+  const new$Queries: Record<string, ReturnType<typeof usePlasmicDataOp>> = {
+    helloApi: usePlasmicDataOp(
+      (() => {
+        try {
+          return {
+            sourceId: "j8LFsD1YziGkSVs6vWfk93",
+            opId: "b8a71e71-5da1-463a-b24a-f30fb52ffa1f",
+            userArgs: {},
+            cacheKey: "plasmic.$.GPYaB4cYzUty.$.",
+            invalidatedKeys: null,
+            roleId: null
+          };
+        } catch (e) {
+          if (
+            e instanceof TypeError ||
+            e?.plasmicType === "PlasmicUndefinedDataError"
+          ) {
+            return undefined;
+          } else {
+            throw e;
+          }
+        }
+      })()
+    )
+  };
+  if (Object.keys(new$Queries).some(k => new$Queries[k] !== $queries[k])) {
+    setDollarQueries(new$Queries);
+  }
 
   return (
     <React.Fragment>
@@ -186,6 +244,32 @@ function PlasmicHelloPage__RenderFunc(props: {
                     data-plasmic-override={overrides.myComponent}
                     className={classNames("__wab_instance", sty.myComponent)}
                   />
+
+                  <div
+                    data-plasmic-name={"textFromApi"}
+                    data-plasmic-override={overrides.textFromApi}
+                    className={classNames(
+                      projectcss.all,
+                      projectcss.__wab_text,
+                      sty.textFromApi
+                    )}
+                  >
+                    <React.Fragment>
+                      {(() => {
+                        try {
+                          return $queries.helloApi.data.response.name;
+                        } catch (e) {
+                          if (
+                            e instanceof TypeError ||
+                            e?.plasmicType === "PlasmicUndefinedDataError"
+                          ) {
+                            return "Loading..";
+                          }
+                          throw e;
+                        }
+                      })()}
+                    </React.Fragment>
+                  </div>
                 </React.Fragment>
               )}
             </ph.DataCtxReader>
@@ -197,12 +281,28 @@ function PlasmicHelloPage__RenderFunc(props: {
 }
 
 const PlasmicDescendants = {
-  root: ["root", "pageLayout", "section", "h1", "text", "myComponent"],
-  pageLayout: ["pageLayout", "section", "h1", "text", "myComponent"],
+  root: [
+    "root",
+    "pageLayout",
+    "section",
+    "h1",
+    "text",
+    "myComponent",
+    "textFromApi"
+  ],
+  pageLayout: [
+    "pageLayout",
+    "section",
+    "h1",
+    "text",
+    "myComponent",
+    "textFromApi"
+  ],
   section: ["section", "h1", "text"],
   h1: ["h1"],
   text: ["text"],
-  myComponent: ["myComponent"]
+  myComponent: ["myComponent"],
+  textFromApi: ["textFromApi"]
 } as const;
 type NodeNameType = keyof typeof PlasmicDescendants;
 type DescendantsType<T extends NodeNameType> =
@@ -214,6 +314,7 @@ type NodeDefaultElementType = {
   h1: "h1";
   text: "div";
   myComponent: typeof MyComponent;
+  textFromApi: "div";
 };
 
 type ReservedPropsType = "variants" | "args" | "overrides";
@@ -281,6 +382,7 @@ export const PlasmicHelloPage = Object.assign(
     h1: makeNodeComponent("h1"),
     text: makeNodeComponent("text"),
     myComponent: makeNodeComponent("myComponent"),
+    textFromApi: makeNodeComponent("textFromApi"),
 
     // Metadata about props expected for PlasmicHelloPage
     internalVariantProps: PlasmicHelloPage__VariantProps,
