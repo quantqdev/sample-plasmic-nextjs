@@ -37,6 +37,7 @@ import {
   ensureGlobalVariants
 } from "@plasmicapp/react-web";
 import PageLayout from "../../PageLayout"; // plasmic-import: cPfYxPfKbAAF/component
+import { MyComponent } from "../../MyComponent"; // plasmic-import: MZPxOIvRSxMj/codeComponent
 
 import "@plasmicapp/react-web/lib/plasmic.css";
 
@@ -61,6 +62,7 @@ export type PlasmicHelloPage__OverridesType = {
   section?: p.Flex<"section">;
   h1?: p.Flex<"h1">;
   text?: p.Flex<"div">;
+  myComponent?: p.Flex<typeof MyComponent>;
 };
 
 export interface DefaultHelloPageProps {}
@@ -147,37 +149,44 @@ function PlasmicHelloPage__RenderFunc(props: {
           >
             <ph.DataCtxReader>
               {$ctx => (
-                <section
-                  data-plasmic-name={"section"}
-                  data-plasmic-override={overrides.section}
-                  className={classNames(projectcss.all, sty.section)}
-                >
-                  <h1
-                    data-plasmic-name={"h1"}
-                    data-plasmic-override={overrides.h1}
-                    className={classNames(
-                      projectcss.all,
-                      projectcss.h1,
-                      projectcss.__wab_text,
-                      sty.h1
-                    )}
+                <React.Fragment>
+                  <section
+                    data-plasmic-name={"section"}
+                    data-plasmic-override={overrides.section}
+                    className={classNames(projectcss.all, sty.section)}
                   >
-                    {"Hello"}
-                  </h1>
-                  <div
-                    data-plasmic-name={"text"}
-                    data-plasmic-override={overrides.text}
-                    className={classNames(
-                      projectcss.all,
-                      projectcss.__wab_text,
-                      sty.text
-                    )}
-                  >
-                    {
-                      "Press the big blue + button to insert components like Tables, Text, Buttons, and Forms.\n\nJoin our Slack Community (icon in bottom left) for help!"
-                    }
-                  </div>
-                </section>
+                    <h1
+                      data-plasmic-name={"h1"}
+                      data-plasmic-override={overrides.h1}
+                      className={classNames(
+                        projectcss.all,
+                        projectcss.h1,
+                        projectcss.__wab_text,
+                        sty.h1
+                      )}
+                    >
+                      {"Hello"}
+                    </h1>
+                    <div
+                      data-plasmic-name={"text"}
+                      data-plasmic-override={overrides.text}
+                      className={classNames(
+                        projectcss.all,
+                        projectcss.__wab_text,
+                        sty.text
+                      )}
+                    >
+                      {
+                        "Press the big blue + button to insert components like Tables, Text, Buttons, and Forms.\n\nJoin our Slack Community (icon in bottom left) for help!"
+                      }
+                    </div>
+                  </section>
+                  <MyComponent
+                    data-plasmic-name={"myComponent"}
+                    data-plasmic-override={overrides.myComponent}
+                    className={classNames("__wab_instance", sty.myComponent)}
+                  />
+                </React.Fragment>
               )}
             </ph.DataCtxReader>
           </PageLayout>
@@ -188,11 +197,12 @@ function PlasmicHelloPage__RenderFunc(props: {
 }
 
 const PlasmicDescendants = {
-  root: ["root", "pageLayout", "section", "h1", "text"],
-  pageLayout: ["pageLayout", "section", "h1", "text"],
+  root: ["root", "pageLayout", "section", "h1", "text", "myComponent"],
+  pageLayout: ["pageLayout", "section", "h1", "text", "myComponent"],
   section: ["section", "h1", "text"],
   h1: ["h1"],
-  text: ["text"]
+  text: ["text"],
+  myComponent: ["myComponent"]
 } as const;
 type NodeNameType = keyof typeof PlasmicDescendants;
 type DescendantsType<T extends NodeNameType> =
@@ -203,6 +213,7 @@ type NodeDefaultElementType = {
   section: "section";
   h1: "h1";
   text: "div";
+  myComponent: typeof MyComponent;
 };
 
 type ReservedPropsType = "variants" | "args" | "overrides";
@@ -269,6 +280,7 @@ export const PlasmicHelloPage = Object.assign(
     section: makeNodeComponent("section"),
     h1: makeNodeComponent("h1"),
     text: makeNodeComponent("text"),
+    myComponent: makeNodeComponent("myComponent"),
 
     // Metadata about props expected for PlasmicHelloPage
     internalVariantProps: PlasmicHelloPage__VariantProps,
