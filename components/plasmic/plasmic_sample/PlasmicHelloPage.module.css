@@ -59,4 +59,8 @@
   max-width: 100%;
   object-fit: cover;
   position: relative;
+  text-align: left;
+  font-style: italic;
+  width: auto;
+  justify-self: flex-start;
 }
